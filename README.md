@@ -34,7 +34,7 @@ result.
 Official Report is revised after publication, so a citation without a timestamp cannot be
 checked later.
 
-## Scale
+## Scale (for demonstration)
 
 | | |
 |---|---:|
