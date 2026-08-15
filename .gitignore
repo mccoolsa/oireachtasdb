@@ -1,0 +1,26 @@
+# This repo publishes the home page snapshot and the README only.
+# Everything below stays local.
+
+# Built data (~4.4 GB, rebuilt from the API)
+data/
+
+# Personal notes
+reference/
+
+# Application source and working documents
+src/
+app/
+requirements.txt
+run.cmd
+CLAUDE.md
+Coverage Audit.md
+Data Caveats.md
+Exploration Log.md
+Project Spec.md
+What Didn't Work.md
+
+# Python
+*.pyc
+__pycache__/
+.env
+.venv/

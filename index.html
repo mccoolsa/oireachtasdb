@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OireachtasDB</title>
+<style>
+  :root{
+    --bg:#0c2418; --bg-2:#10301f; --panel:#14361f; --panel-2:#1a4027;
+    --line:rgba(226,232,220,.14); --line-2:rgba(226,232,220,.28);
+    --ink:#e8ede4; --muted:#9fb3a3; --cream:#f2ead6; --accent:#8fd19e;
+    --serif:Georgia,'Iowan Old Style','Times New Roman',serif;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    line-height:1.6;-webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+
+  /* ---- top bar ---- */
+  header.top{
+    position:sticky;top:0;z-index:20;background:rgba(12,36,24,.94);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+  }
+  .top-in{display:flex;align-items:center;gap:16px;padding:12px 0;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);
+    font-size:18px;font-weight:700;color:var(--cream);text-decoration:none;
+    white-space:nowrap}
+  .brand .mark{width:26px;height:26px;border:1.5px solid var(--accent);
+    border-radius:50%;display:grid;place-items:center;font-size:12px;
+    color:var(--accent)}
+  form.q{flex:1;min-width:230px;display:flex;align-items:center;gap:8px;
+    background:var(--panel);border:1px solid var(--line);border-radius:999px;
+    padding:5px 5px 5px 16px}
+  form.q input[type=search]{flex:1;min-width:60px;background:none;border:0;
+    color:var(--ink);font-size:15px;outline:none;font-family:var(--sans)}
+  form.q button{background:var(--panel-2);color:var(--cream);border:0;
+    border-radius:999px;padding:8px 18px;font-size:14px;cursor:pointer;
+    font-weight:600}
+  form.q button:hover{background:#215233}
+  nav.links{display:flex;gap:8px;flex-wrap:wrap}
+  nav.links a{padding:7px 14px;border:1px solid var(--line);border-radius:8px;
+    font-size:13.5px;text-decoration:none;color:var(--ink);white-space:nowrap}
+  nav.links a:hover,nav.links a.on{background:var(--panel-2);
+    border-color:var(--line-2)}
+
+  /* ---- hero ---- */
+  .hero{
+    text-align:center;padding:74px 0 0;border-bottom:1px solid var(--line);
+    background-image:radial-gradient(rgba(143,209,158,.10) 1px,transparent 1px);
+    background-size:26px 26px;
+  }
+  .eyebrow{font-size:11.5px;letter-spacing:.19em;text-transform:uppercase;
+    color:var(--muted);font-weight:600}
+  h1{font-family:var(--serif);font-weight:700;color:var(--cream);
+    font-size:clamp(2.2rem,5.6vw,4rem);line-height:1.08;margin:.35em 0 .1em}
+  h1 .it{display:block;font-style:italic;font-weight:400}
+  .lede{max-width:620px;margin:14px auto 0;color:var(--muted);font-size:16.5px}
+
+  .statbar{display:flex;flex-wrap:wrap;justify-content:center;
+    margin:46px 0 0;border-top:1px solid var(--line)}
+  .stat{padding:24px 30px;text-align:center;flex:1 1 130px;
+    border-right:1px solid var(--line)}
+  .stat:last-child{border-right:0}
+  .stat b{display:block;font-family:var(--serif);font-size:clamp(1.4rem,3vw,2rem);
+    color:var(--cream);font-weight:700;line-height:1.1}
+  .stat span{display:block;margin-top:6px;font-size:10.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted)}
+
+  /* ---- sections ---- */
+  section{padding:52px 0}
+  .sec-label{display:flex;align-items:center;gap:16px;font-size:11.5px;
+    letter-spacing:.19em;text-transform:uppercase;color:var(--accent);
+    font-weight:700;margin-bottom:26px}
+  .sec-label::after{content:"";flex:1;height:1px;background:var(--line)}
+  h2{font-family:var(--serif);color:var(--cream);font-size:1.7rem;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:14.5px;margin:0 0 22px}
+
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(232px,1fr))}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:20px}
+  .card h3{margin:0 0 14px;font-family:var(--serif);color:var(--cream);
+    font-size:1.12rem}
+
+  /* ---- results ---- */
+  .result{background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;padding:18px 20px;margin-bottom:14px}
+  .result:hover{border-color:var(--line-2)}
+  .rmeta{display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+    font-size:13px;color:var(--muted);margin-bottom:9px}
+  .chip{display:inline-block;padding:2.5px 9px;border-radius:6px;
+    font-size:11.5px;font-weight:700;letter-spacing:.03em}
+  .chip.unres{border:1px dashed rgba(255,255,255,.55)}
+  .who{color:var(--cream);font-weight:600;font-size:14.5px}
+  .snippet{margin:0;color:#dbe4d7;font-size:14.7px}
+  .ractions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;font-size:12.5px}
+  .ractions a{padding:5px 11px;border:1px solid var(--line);border-radius:7px;
+    text-decoration:none;color:var(--muted)}
+  .ractions a:hover{color:var(--ink);border-color:var(--line-2)}
+
+  .filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+    margin:0 0 22px;font-size:13.5px;color:var(--muted)}
+  .filters select,.filters input{background:var(--panel);color:var(--ink);
+    border:1px solid var(--line);border-radius:8px;padding:7px 10px;
+    font-size:13.5px;font-family:var(--sans)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:12px;letter-spacing:.09em;
+    text-transform:uppercase}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .win{color:var(--accent);font-weight:700}
+  .note{color:var(--muted);font-size:13.5px}
+  code{background:rgba(0,0,0,.3);padding:1px 5px;border-radius:4px;
+    font-size:12.5px}
+  footer{border-top:1px solid var(--line);padding:30px 0 50px;
+    color:var(--muted);font-size:13px}
+  footer a{color:var(--accent)}
+  .scroll{overflow-x:auto}
+
+  /* ---- hero search ---- */
+  .hero-q{max-width:560px;margin:26px auto 0}
+  .card.lift{display:block;text-decoration:none}
+  .card.lift:hover{border-color:var(--line-2);background:var(--panel-2)}
+  .card.lift h3{margin:0 0 6px}
+
+  /* ---- vote rows ---- */
+  .vote-row{display:flex;align-items:center;gap:18px;text-decoration:none;
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px 18px;margin-bottom:11px}
+  .vote-row:hover{border-color:var(--line-2);background:var(--panel-2)}
+  .vote-main{flex:1;min-width:0}
+  .vote-title{color:var(--cream);font-family:var(--serif);font-size:1.04rem;
+    line-height:1.32;margin-bottom:6px}
+  .tally{display:flex;gap:16px;flex:0 0 auto}
+  .tally div{text-align:center}
+  .tally b{display:block;font-family:var(--serif);font-size:1.35rem;
+    line-height:1;font-variant-numeric:tabular-nums}
+  .tally span{font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted)}
+  b.ta{color:var(--accent)} b.nil{color:#e88b8b}
+
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;
+    font-size:11px;font-weight:700;letter-spacing:.03em}
+  .pill.ok{background:rgba(143,209,158,.17);color:#8fd19e;
+    border:1px solid rgba(143,209,158,.4)}
+  .pill.no{background:rgba(232,139,139,.15);color:#e88b8b;
+    border:1px solid rgba(232,139,139,.4)}
+  .pill.un{background:rgba(255,255,255,.08);color:var(--muted);
+    border:1px dashed var(--line-2)}
+
+  .tally-big{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px}
+  .tb{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px 26px;text-align:center;min-width:104px}
+  .tb b{display:block;font-family:var(--serif);font-size:2.1rem;line-height:1;
+    font-variant-numeric:tabular-nums}
+  .tb span{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted)}
+  .tb.ta b{color:var(--accent)} .tb.nil b{color:#e88b8b}
+  .tb.ta{border-color:rgba(143,209,158,.4)}
+  .tb.nil{border-color:rgba(232,139,139,.4)}
+
+  /* ---- vote sides ---- */
+  .sides{display:grid;gap:16px;margin-top:30px;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .side{background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;padding:18px}
+  .side.ta{border-top:2px solid var(--accent)}
+  .side.nil{border-top:2px solid #e88b8b}
+  .side-head{display:flex;align-items:baseline;justify-content:space-between;
+    margin-bottom:12px}
+  .side-head h3{margin:0;font-size:1.2rem}
+  .side-head span{font-family:var(--serif);font-size:1.2rem;color:var(--muted)}
+  .party-tally{list-style:none;margin:0 0 14px;padding:0 0 12px;
+    border-bottom:1px solid var(--line)}
+  .party-tally li{display:flex;align-items:center;gap:9px;padding:3px 0;
+    font-size:13.5px;color:var(--muted)}
+  .party-tally li b{margin-left:auto;color:var(--ink);
+    font-variant-numeric:tabular-nums}
+  .member-list{display:flex;flex-direction:column;gap:5px;max-height:340px;
+    overflow-y:auto}
+  .member{display:flex;align-items:center;gap:8px;font-size:13.5px}
+  .mname{color:var(--ink)}
+  .chip.sm{font-size:10px;padding:1.5px 6px;min-width:34px;text-align:center}
+
+  /* ---- key terms ---- */
+  .terms{display:flex;flex-wrap:wrap;gap:6px}
+  .term{font-size:12.5px;padding:3px 10px;border-radius:999px;
+    border:1px solid var(--line-2);color:var(--muted)}
+
+  /* ---- readable speech body ---- */
+  .speech-heading{font-family:var(--serif);color:var(--cream);
+    font-size:1.22rem;margin:36px 0 6px;padding-top:22px;
+    border-top:1px solid var(--line)}
+  .speech-body{font-size:17px;line-height:1.75;
+    color:#e2ebdf}
+  .speech-body p{margin:0 0 1.05em}
+  .speech-body p:first-child::first-line{font-weight:600}
+
+  .summary-card{margin-top:6px;border-left:3px solid var(--accent)}
+  .summary-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .summary-head h3{margin:0;font-size:1.1rem}
+  .tag{font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+    font-weight:700;padding:3px 9px;border-radius:999px;
+    border:1px solid var(--line-2);color:var(--accent)}
+  .summary-body{font-size:15.6px;line-height:1.68;
+    margin:0 0 .9em;color:#dde6da}
+  .summary-foot{margin:12px 0 0;padding-top:12px;
+    border-top:1px solid var(--line)}
+
+  /* Reading pages use a narrower column so a comfortable line length fills it
+     rather than leaving half the screen empty beside the text. */
+  .wrap.read{max-width:880px}
+
+  /* ---- a turn in a debate: its own card, full text, never truncated ---- */
+  .turn{background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;padding:18px 22px;margin-bottom:14px}
+  .turn-head{display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+    margin-bottom:10px}
+  .turn-head .who{color:var(--cream);font-weight:600;font-size:15px}
+  .turn-body{font-size:16px;line-height:1.72;color:#dbe4d7}
+  .turn-body p{margin:0 0 .95em}
+  .turn-body p:last-child{margin-bottom:0}
+  .turn.current{border-color:var(--accent);border-left:3px solid var(--accent);
+    background:var(--panel-2)}
+
+  /* Party tinting, off by default. Each tint is solved to a constant
+     luminance, so body text sits at 8.5-8.7:1 whichever party is speaking
+     (untinted baseline is 10.20:1). Verified by src/pipeline/palette_check.py. */
+  .tinted .turn{border-left:3px solid var(--tint-edge, var(--line))}
+  .tinted .turn[data-tint]{background:var(--tint)}
+  .tinted .turn.current{border-left-color:var(--accent);
+    outline:1px solid var(--accent);outline-offset:-1px}
+  .toggle{padding:5px 11px;border:1px solid var(--line);border-radius:7px;
+    background:none;color:var(--muted);font-size:12.5px;cursor:pointer;
+    font-family:var(--sans)}
+  .toggle:hover{color:var(--ink);border-color:var(--line-2)}
+  .toggle[aria-pressed="true"]{background:var(--panel-2);color:var(--cream);
+    border-color:var(--line-2)}
+  .here{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--accent);font-weight:700}
+
+  /* ---- debate index rows ---- */
+  .debate-row{display:block;text-decoration:none;background:var(--panel);
+    border:1px solid var(--line);border-radius:12px;padding:16px 20px;
+    margin-bottom:11px}
+  .debate-row:hover{border-color:var(--line-2);background:var(--panel-2)}
+  .debate-row .vote-title{margin-bottom:0}
+
+  /* ---- member index ---- */
+  .member-grid{display:grid;gap:12px;
+    grid-template-columns:repeat(auto-fill,minmax(258px,1fr))}
+  .member-card{display:block;text-decoration:none;background:var(--panel);
+    border:1px solid var(--line);border-radius:12px;padding:15px 17px}
+  .member-card:hover{border-color:var(--line-2);background:var(--panel-2)}
+  .mtitle{font-family:var(--serif);color:var(--cream);font-size:1.06rem;
+    line-height:1.3}
+
+  /* ---- FAQ ---- */
+  .faq{border-top:1px solid var(--line);padding:22px 0}
+  .faq:first-of-type{border-top:0}
+  .faq h3{margin:0 0 8px;font-family:var(--serif);color:var(--cream);
+    font-size:1.14rem}
+  .faq p{margin:0 0 .8em;font-size:15.5px;line-height:1.68;color:#dbe4d7}
+  .faq p:last-child{margin-bottom:0}
+  .faq ul{margin:0;padding-left:20px}
+  .faq li{margin-bottom:7px;font-size:15.5px;line-height:1.62;color:#dbe4d7}
+  .faq table{margin-top:4px}
+  .faq td{border-bottom:1px solid var(--line);padding:8px 12px 8px 0}
+
+  /* ---- term frequency bars ---- */
+  .termbars{display:grid;gap:7px;max-width:640px;margin-top:14px}
+  .termbar{display:grid;grid-template-columns:130px 1fr 46px;
+    align-items:center;gap:12px;font-size:14px}
+  .tname{color:var(--ink);overflow:hidden;text-overflow:ellipsis;
+    white-space:nowrap}
+  .tbar{background:rgba(255,255,255,.06);border-radius:999px;height:9px;
+    overflow:hidden}
+  .tbar i{display:block;height:100%;background:var(--accent);
+    border-radius:999px;opacity:.75}
+  .tcount{text-align:right;color:var(--muted);
+    font-variant-numeric:tabular-nums;font-size:13px}
+
+  /* ---- filters + pager ---- */
+  .filter-grid{align-items:end;gap:12px}
+  .filter-grid label{display:flex;flex-direction:column;gap:5px;font-size:11px;
+    letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
+  .filter-grid label.grow{flex:1;min-width:170px}
+  .filter-grid button{background:var(--panel-2);color:var(--cream);border:0;
+    border-radius:8px;padding:9px 18px;cursor:pointer;font-size:14px}
+  .filter-grid button:hover{background:#215233}
+  .pager{display:flex;align-items:center;gap:18px;margin-top:24px;
+    padding-top:18px;border-top:1px solid var(--line);flex-wrap:wrap}
+  .pagejump{display:flex;align-items:center;gap:8px;margin-left:auto;
+    font-size:13px;color:var(--muted)}
+  .pagejump input[type=number]{width:78px;background:var(--panel);
+    color:var(--ink);border:1px solid var(--line);border-radius:8px;
+    padding:7px 9px;font-size:13.5px;font-family:var(--sans);
+    font-variant-numeric:tabular-nums}
+  .pagejump button{background:var(--panel-2);color:var(--cream);border:0;
+    border-radius:8px;padding:8px 15px;font-size:13.5px;cursor:pointer}
+  .pagejump button:hover{background:#215233}
+  @media(max-width:560px){.pagejump{margin-left:0;width:100%}}
+  .pager a{padding:8px 16px;border:1px solid var(--line);border-radius:8px;
+    text-decoration:none;font-size:14px}
+  .pager a:hover{border-color:var(--line-2);background:var(--panel)}
+  @media(max-width:620px){
+    .top-in{gap:10px}.stat{padding:16px 12px}
+    nav.links{width:100%;justify-content:flex-start}
+  }
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap top-in">
+  <a class="brand" href="https://oireachtasdb.ie/"><span class="mark">◎</span> OireachtasDB</a>
+  <form class="q" action="https://oireachtasdb.ie/search" method="get" role="search">
+    <input type="search" name="q" placeholder="Search the Official Report…"
+           value="" aria-label="Search debates">
+    <button type="submit">Search</button>
+  </form>
+  <nav class="links">
+    <a href="https://oireachtasdb.ie/votes">Votes</a>
+    <a href="https://oireachtasdb.ie/search">Debates</a>
+    <a href="https://oireachtasdb.ie/members">Members</a>
+    <a href="https://oireachtasdb.ie/faq">FAQ</a>
+  </nav>
+</div></header>
+
+
+<div class="hero"><div class="wrap">
+  <p class="eyebrow">Dáil &amp; Seanad Éireann · 2020-01-21 – Present</p>
+  <h1>What was said in the Dáil,<span class="it">and how they voted.</span></h1>
+  <p class="lede">Search six years of parliamentary debate. Every speaker shows
+    the party they belonged to <em>on the day they spoke</em>, every vote shows
+    how each member cast it, and everything can be downloaded with a citation.
+    Updated weekly.</p>
+
+  <form class="q hero-q" action="https://oireachtasdb.ie/search" method="get" role="search">
+    <input type="search" name="q" placeholder="Try “eviction ban” or “mica redress”…"
+           aria-label="Search debates">
+    <button type="submit">Search</button>
+  </form>
+
+  <div class="statbar">
+    <div class="stat"><b>1,190</b><span>Sittings</span></div>
+    <div class="stat"><b>318,530</b><span>Contributions</span></div>
+    <div class="stat"><b>2,470</b><span>Votes</span></div>
+    <div class="stat"><b>186,260</b><span>Votes cast</span></div>
+    <div class="stat"><b>318</b><span>Members</span></div>
+  </div>
+</div></div>
+
+<section><div class="wrap">
+  <p class="sec-label">Start here</p>
+  <div class="grid">
+    <a class="card lift" href="https://oireachtasdb.ie/votes">
+      <h3>Browse the votes</h3>
+      <p class="note">Every division in the Dáil and Seanad — who voted Tá, who
+        voted Níl, and which party they sat for at the time.</p>
+    </a>
+    <a class="card lift" href="https://oireachtasdb.ie/search">
+      <h3>Search the debates</h3>
+      <p class="note">Full text of every contribution, filterable by party,
+        chamber and date. Search tips are on the page.</p>
+    </a>
+    <a class="card lift" href="https://oireachtasdb.ie/faq">
+      <h3>Common questions</h3>
+      <p class="note">What is covered, what is missing, how the party labels
+        work, and how to search.</p>
+    </a>
+  </div>
+</div></section>
+
+
+<section style="border-top:1px solid var(--line)"><div class="wrap">
+  <p class="sec-label">Latest votes</p>
+  <h2>Most recent divisions</h2>
+  <p class="sub">The last few recorded votes in either chamber.</p>
+  
+  <a class="vote-row" href="https://oireachtasdb.ie/vote/4">
+    <div class="vote-main">
+      <div class="vote-title">Development (Strategic Gas Reserve) Bill 2026: Committee and Remaining Stages</div>
+      <div class="rmeta">
+        <span>2026-07-16</span>
+        <span class="pill ok">Carried</span>
+        <span>Question put: </span>
+      </div>
+    </div>
+    <div class="tally">
+      <div><b class="ta">27</b><span>Tá</span></div>
+      <div><b class="nil">10</b><span>Níl</span></div>
+    </div>
+  </a>
+  
+  <a class="vote-row" href="https://oireachtasdb.ie/vote/3">
+    <div class="vote-main">
+      <div class="vote-title">Development (Strategic Gas Reserve) Bill 2026: Committee and Remaining Stages</div>
+      <div class="rmeta">
+        <span>2026-07-16</span>
+        <span class="pill no">Lost</span>
+        <span>Amendment put: </span>
+      </div>
+    </div>
+    <div class="tally">
+      <div><b class="ta">11</b><span>Tá</span></div>
+      <div><b class="nil">26</b><span>Níl</span></div>
+    </div>
+  </a>
+  
+  <a class="vote-row" href="https://oireachtasdb.ie/vote/2">
+    <div class="vote-main">
+      <div class="vote-title">Civil Law (Miscellaneous Provisions) Act 2022 (Section 9(2)) (Amount of Financial Contribution) Order 2025 (Revocation) Order 2026: Motion</div>
+      <div class="rmeta">
+        <span>2026-07-16</span>
+        <span class="pill no">Lost</span>
+        <span>Amendment put: </span>
+      </div>
+    </div>
+    <div class="tally">
+      <div><b class="ta">6</b><span>Tá</span></div>
+      <div><b class="nil">29</b><span>Níl</span></div>
+    </div>
+  </a>
+  
+  <a class="vote-row" href="https://oireachtasdb.ie/vote/1">
+    <div class="vote-main">
+      <div class="vote-title">An tOrd Gnó - Order of Business</div>
+      <div class="rmeta">
+        <span>2026-07-16</span>
+        <span class="pill ok">Carried</span>
+        <span>Question put: : &#34;That the Order of Business be agreed to.&#34;</span>
+      </div>
+    </div>
+    <div class="tally">
+      <div><b class="ta">18</b><span>Tá</span></div>
+      <div><b class="nil">11</b><span>Níl</span></div>
+    </div>
+  </a>
+  
+  <a class="vote-row" href="https://oireachtasdb.ie/vote/12">
+    <div class="vote-main">
+      <div class="vote-title">Social Housing Passport Bill 2026: Second Stage [Private Members]</div>
+      <div class="rmeta">
+        <span>2026-07-15</span>
+        <span class="pill ok">Carried</span>
+        <span>Amendment put: </span>
+      </div>
+    </div>
+    <div class="tally">
+      <div><b class="ta">81</b><span>Tá</span></div>
+      <div><b class="nil">69</b><span>Níl</span></div>
+    </div>
+  </a>
+  
+  <p class="note" style="margin-top:14px"><a href="https://oireachtasdb.ie/votes">All 2,470 votes →</a></p>
+</div></section>
+
+
+
+<section style="border-top:1px solid var(--line)"><div class="wrap">
+  <p class="sec-label">Latest debates</p>
+  <h2>What the House has been discussing</h2>
+  <p class="sub">Each debate is summarised from its own text — the sentences
+    below were spoken in the chamber, not written by us.</p>
+  <div class="grid">
+    
+    <a class="card lift" href="https://oireachtasdb.ie/debate/32424">
+      <div class="note" style="margin-bottom:6px">2026-07-16 ·
+        Dail · 28 speakers</div>
+      <h3>Fiscal Implications of a United Ireland: Statements</h3>
+      <p class="note">There are serious economic and fiscal issues to be considered but any discussion about a unified Ireland, a united Ireland or a new Ireland, or the island of Ireland operating as one, that s…</p>
+    </a>
+    
+    <a class="card lift" href="https://oireachtasdb.ie/debate/32466">
+      <div class="note" style="margin-bottom:6px">2026-07-16 ·
+        Seanad · 9 speakers</div>
+      <h3>Development (Strategic Gas Reserve) Bill 2026: Committee and Remaining Stages</h3>
+      <p class="note">Amendment No. 2 makes it absolutely clear that the strategic emergency gas reserve is exactly that: an emergency reserve.…</p>
+    </a>
+    
+    <a class="card lift" href="https://oireachtasdb.ie/debate/32434">
+      <div class="note" style="margin-bottom:6px">2026-07-16 ·
+        Dail · 8 speakers</div>
+      <h3>Waste Management (Single Household Waste Collection Service) Bill 2026: Second Stage [Private Members]</h3>
+      <p class="note">The Bill is the Waste Management (Single Household Waste Collection Service) Bill 2026. I welcome the opportunity to speak on the Waste Management (Household Waste Collection Service) Bill. …</p>
+    </a>
+    
+    <a class="card lift" href="https://oireachtasdb.ie/debate/32445">
+      <div class="note" style="margin-bottom:6px">2026-07-16 ·
+        Seanad · 22 speakers</div>
+      <h3>An tOrd Gnó - Order of Business</h3>
+      <p class="note">Apart from them, throughout Leinster House there are the ushers, the secretaries, the people manning the committees, the technical staff and the like, the catering staff and the bar staff. I…</p>
+    </a>
+    
+  </div>
+</div></section>
+
+
+<section style="border-top:1px solid var(--line)"><div class="wrap">
+  <p class="sec-label">Why the party labels matter</p>
+  <h2>Parties as they were, not as they are</h2>
+  <p class="sub">Members change party. When that happens, most archives quietly
+    relabel their old speeches with their new party. This one doesn't — a
+    contribution from 2020 carries the party its speaker held in 2020.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px">
+    
+    <span class="chip "
+          style="background:#77BB77;color:#111111"
+          title="Fianna Fáil — 66,651 contributions">
+      FF · 66,651</span>
+    
+    <span class="chip "
+          style="background:#1F5FA8;color:#FFFFFF"
+          title="Fine Gael — 54,730 contributions">
+      FG · 54,730</span>
+    
+    <span class="chip "
+          style="background:#111827;color:#FFFFFF"
+          title="Ceann Comhairle / Chair — 52,832 contributions">
+      CC · 52,832</span>
+    
+    <span class="chip "
+          style="background:#0C4A2F;color:#FFFFFF"
+          title="Sinn Féin — 47,549 contributions">
+      SF · 47,549</span>
+    
+    <span class="chip "
+          style="background:#5F6B7A;color:#FFFFFF"
+          title="Independent — 41,558 contributions">
+      IND · 41,558</span>
+    
+    <span class="chip "
+          style="background:#B7CF3C;color:#111111"
+          title="Green Party — 13,363 contributions">
+      GP · 13,363</span>
+    
+    <span class="chip "
+          style="background:#F79FB6;color:#111111"
+          title="People Before Profit–Solidarity — 12,770 contributions">
+      PBP · 12,770</span>
+    
+    <span class="chip "
+          style="background:#C8102E;color:#FFFFFF"
+          title="Labour — 12,383 contributions">
+      LAB · 12,383</span>
+    
+    <span class="chip "
+          style="background:#8B3A9E;color:#FFFFFF"
+          title="Social Democrats — 9,612 contributions">
+      SD · 9,612</span>
+    
+    <span class="chip "
+          style="background:#0F766E;color:#FFFFFF"
+          title="Aontú — 3,203 contributions">
+      AON · 3,203</span>
+    
+    <span class="chip "
+          style="background:#E0A800;color:#111111"
+          title="Independent Ireland — 1,440 contributions">
+      II · 1,440</span>
+    
+    <span class="chip "
+          style="background:#7C5CD6;color:#FFFFFF"
+          title="Independents 4 Change — 751 contributions">
+      I4C · 751</span>
+    
+    <span class="chip "
+          style="background:#5C6F00;color:#FFFFFF"
+          title="100% Redress — 205 contributions">
+      RDR · 205</span>
+    
+  </div>
+  <p class="note" style="margin-top:16px">Several parties share a colour family
+    — Fianna Fáil, Sinn Féin, the Greens and Aontú are all green — so the
+    abbreviation, not the colour, is what identifies a party. Colours are chosen
+    for legibility and are not official party branding.</p>
+</div></section>
+
+
+<footer><div class="wrap">
+  <p>Source: Houses of the Oireachtas Official Report, licensed
+  <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+  The Report is revised after first publication — every download carries the
+  fetch timestamp identifying the version quoted.</p>
+  <p>Party colours are functional design choices for legibility and are
+  <em>not</em> official party branding.</p>
+  <p><a href="https://oireachtasdb.ie/faq">FAQ</a> · <a href="https://oireachtasdb.ie/evidence">How this was built and tested</a></p>
+</div>  <div class="wrap"><p style="margin-top:14px">Static snapshot of the home page. The running site is at <a href="https://oireachtasdb.ie">oireachtasdb.ie</a>.</p></div>
+</footer>
+</body>
+</html>
