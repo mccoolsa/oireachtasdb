@@ -1,14 +1,16 @@
 # OireachtasDB
 
 Search over the Official Report of the Houses of the Oireachtas — every Dáil and Seanad debate
-from 2020 onward, and every recorded vote.
+from 2020 onward, and every recorded vote. From the use of the Oireachtas API.
 
 Going live at **[oireachtasdb.ie](https://oireachtasdb.ie)**. `index.html` in this repo is a
-static snapshot of the home page.
+static snapshot of the home page. Updated weekly Monday 01:00 GMT.
+
+**This current database is yet to go live - so figures, contributions and other metrics are valid from 2020 to 01-08-2026.**
 
 ## What it does
 
-**Party as it was, not as it is.** Every speaker carries the party they belonged to on the day
+Every speaker carries the party they belonged to on the day
 they spoke. Members change party, and most archives quietly relabel their old speeches with
 their current one. A contribution from 2020 here keeps its 2020 party, resolved by a dated
 join and written onto the record when it is parsed.
@@ -43,7 +45,7 @@ checked later.
 | Members | 318 |
 | Speakers resolved to a named member | 99.6% |
 
-## Caveats
+## Caveats of note
 
 **Written answers are not included.** They are not in the debate record at all — the Oireachtas
 publishes them separately, with a different attribution model (an asking member and an
@@ -52,7 +54,7 @@ answering minister). Adding them means a separate ingest.
 **Committee transcripts are not included.** Committee votes are; their debates are not.
 
 **Coverage starts in 2020.** The source archive goes back to 1919 and the pipeline is
-date-parameterised, so widening it is configuration rather than a rewrite. Earlier material is
+date-parameterized, so widening it is configuration rather than a rewrite. Earlier material is
 also poorer: sampling the whole 1919–2026 archive, speaker-to-member linkage runs from 84% in
 the 1920s to 99.8% in the 2020s.
 
@@ -70,15 +72,9 @@ gender field for every member in this period. Showing such a breakdown would mea
 
 **Party colours are not official branding.** They are chosen so parties stay distinguishable in
 greyscale and to colour-blind readers. Several parties genuinely share a colour family — Fianna
-Fáil, Sinn Féin, the Greens and Aontú are all green — so the abbreviation on each chip, not the
+Fáil, Sinn Féin, the Greens and Aontú are all shades of green — so the abbreviation on each chip, not the
 colour, identifies the party.
 
-**Retrieval was measured, and the result was not the expected one.** The project was built
-expecting hybrid retrieval (keyword plus embeddings) to beat keyword search. On 59 questions
-written before the index was queried, it did not: BM25 scored MRR 0.870 against hybrid's 0.798,
-and the difference between them sits inside the confidence interval. Parliamentary queries are
-mostly proper nouns — bill titles, scheme names, people, places — which is where keyword
-matching is strongest.
 
 ## Source and licence
 
